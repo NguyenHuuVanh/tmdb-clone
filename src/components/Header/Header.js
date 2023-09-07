@@ -1,7 +1,7 @@
+import HeadlessTippy from "../Tooltip/Tooltip";
+import Tippy from "@tippyjs/react/headless";
 import classNames from "classnames/bind";
 import styles from "./Header.module.scss";
-import "react-tooltip/dist/react-tooltip.css";
-import {Tooltip} from "react-tooltip";
 
 const cx = classNames.bind(styles);
 
@@ -20,11 +20,17 @@ const Header = () => {
               />
             </a>
             <ul className={cx("dropdown_menu")} data-role="menu" tabIndex={0} role="menubar">
-              <li className={cx("dropdown_item")}>
-                <a id="clickable" className={cx("dropdonw_link")} href="" data-tooltip-hidden={false}>
-                  Movies
-                </a>
-                <Tooltip anchorSelect="#clickable" clickable>
+              <HeadlessTippy
+                placement={"top-start"}
+                interactive={true}
+                link={
+                  <li className={cx("dropdown_item")}>
+                    <a className={cx("dropdonw_link")} href="">
+                      Movies
+                    </a>
+                  </li>
+                }
+                content={
                   <ul className={cx("sub_dropdown")}>
                     <li className={cx("sub_dropdown-item")}>
                       <a className={cx("sub_dropdown-link")} href="">
@@ -33,32 +39,112 @@ const Header = () => {
                     </li>
                     <li className={cx("sub_dropdown-item")}>
                       <a className={cx("sub_dropdown-link")} href="">
-                        Popular
+                        Now Playing
                       </a>
                     </li>
+                    <li className={cx("sub_dropdown-item")}>
+                      <a className={cx("sub_dropdown-link")} href="">
+                        Upcoming
+                      </a>
+                    </li>
+                    <li className={cx("sub_dropdown-item")}>
+                      <a className={cx("sub_dropdown-link")} href="">
+                        Top Rated
+                      </a>
+                    </li>
+                  </ul>
+                }
+              />
+              <HeadlessTippy
+                placement={"top-start"}
+                interactive={true}
+                link={
+                  <li className={cx("dropdown_item")}>
+                    <a className={cx("dropdonw_link")} href="">
+                      TV Shows
+                    </a>
+                  </li>
+                }
+                content={
+                  <ul className={cx("sub_dropdown")}>
                     <li className={cx("sub_dropdown-item")}>
                       <a className={cx("sub_dropdown-link")} href="">
                         Popular
                       </a>
                     </li>
+                    <li className={cx("sub_dropdown-item")}>
+                      <a className={cx("sub_dropdown-link")} href="">
+                        Airing Today
+                      </a>
+                    </li>
+                    <li className={cx("sub_dropdown-item")}>
+                      <a className={cx("sub_dropdown-link")} href="">
+                        On TV
+                      </a>
+                    </li>
+                    <li className={cx("sub_dropdown-item")}>
+                      <a className={cx("sub_dropdown-link")} href="">
+                        Top Rated{" "}
+                      </a>
+                    </li>
                   </ul>
-                </Tooltip>
-              </li>
-              <li className={cx("dropdown_item")}>
-                <a className={cx("dropdonw_link")} href="">
-                  TV Shows
-                </a>
-              </li>
-              <li className={cx("dropdown_item")}>
-                <a className={cx("dropdonw_link")} href="">
-                  People
-                </a>
-              </li>
-              <li className={cx("dropdown_item")}>
-                <a className={cx("dropdonw_link")} href="">
-                  More
-                </a>
-              </li>
+                }
+              />
+              <HeadlessTippy
+                placement={"top-start"}
+                interactive={true}
+                link={
+                  <li className={cx("dropdown_item")}>
+                    <a className={cx("dropdonw_link")} href="">
+                      People
+                    </a>
+                  </li>
+                }
+                content={
+                  <ul className={cx("sub_dropdown")}>
+                    <li className={cx("sub_dropdown-item")}>
+                      <a className={cx("sub_dropdown-link")} href="">
+                        Popular People
+                      </a>
+                    </li>
+                  </ul>
+                }
+              />
+              <HeadlessTippy
+                placement={"top-start"}
+                interactive={true}
+                link={
+                  <li className={cx("dropdown_item")}>
+                    <a className={cx("dropdonw_link")} href="">
+                      More
+                    </a>
+                  </li>
+                }
+                content={
+                  <ul className={cx("sub_dropdown")}>
+                    <li className={cx("sub_dropdown-item")}>
+                      <a className={cx("sub_dropdown-link")} href="">
+                        Discussions
+                      </a>
+                    </li>
+                    <li className={cx("sub_dropdown-item")}>
+                      <a className={cx("sub_dropdown-link")} href="">
+                        Leaderboard
+                      </a>
+                    </li>
+                    <li className={cx("sub_dropdown-item")}>
+                      <a className={cx("sub_dropdown-link")} href="">
+                        Support
+                      </a>
+                    </li>
+                    <li className={cx("sub_dropdown-item")}>
+                      <a className={cx("sub_dropdown-link")} href="">
+                        API
+                      </a>
+                    </li>
+                  </ul>
+                }
+              />
             </ul>
           </div>
           <div className={cx("flex")}>

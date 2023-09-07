@@ -161,14 +161,35 @@ header ul {
 
 .sub_dropdown {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: center;
   flex-flow: column;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  border-radius: 4px;
+  background-color: #fff;
+  font-stretch: 100%;
+  font-family: source-sans-pro-regular;
+  color: #000;
+  max-height: 249.4px;
+  padding: 8px 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
 
   .sub_dropdown-item {
     list-style-type: none;
+    height: 30px;
 
     .sub_dropdown-link {
       text-decoration: none;
+      padding: 3px 64px 3px 24px;
+      color: #212529;
+      font-weight: 400;
     }
   }
+}
+
+div[data-tippy-root] {
+  max-width: 191.6px;
+  height: 137.6px;
+  box-sizing: content-box;
 }
