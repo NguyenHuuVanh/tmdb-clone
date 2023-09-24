@@ -8,3 +8,23 @@ html {
   font-family: source-sans-pro-regular;
   font-size: 62.5%;
 }
+
+body,
+div.App {
+  min-height: 100%;
+  height: auto;
+  flex-wrap: wrap;
+}
+
+.App {
+  flex: 1 1 auto;
+  position: relative;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  align-items: center;
+  align-content: center;
+}

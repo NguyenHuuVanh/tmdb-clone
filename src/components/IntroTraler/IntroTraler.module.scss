@@ -1,0 +1,85 @@
+section.bg_center {
+  margin: 0 auto;
+  background-image: url("../assets/images/bg-intro-traler/bg-img.jpg");
+
+}
+
+.bg_center {
+  .column_wrapper {
+    background: linear-gradient(to right, rgba(var(--tmdbDarkBlue), 0.75) 0%, rgba(var(--tmdbDarkBlue), 0.75) 100%);
+    width: 100%;
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: center;
+
+    .traler_content {
+      position: relative;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      align-content: flex-start;
+
+      .traler_content_wrapper {
+        padding-right: 0;
+        padding-left: 0;
+        padding-top: 30px;
+
+        .column {
+          width: 100%;
+
+          .header {
+            width: 100%;
+            padding-left: 40px;
+            padding-right: 40px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            align-content: center;
+
+            h2 {
+              margin-right: 20px;
+              white-space: nowrap;
+              font-size: 2.4rem;
+              font-family: source-sans-pro-medium;
+            }
+
+            .title {
+              // background: rgba(var(--tmdbDarkBlue), 1);
+              // -webkit-background-clip: text;
+              // -webkit-text-fill-color: transparent;
+              // text-align: center;
+              
+            }
+
+            .background {
+              background: linear-gradient(
+                to right,
+                rgba(var(--tmdbLighterGreen), 1) 0%,
+                rgba(var(--tmdbLightGreen), 1) 100%
+              );
+              z-index: -1;
+              border-radius: 30px;
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              pointer-events: none;
+              transition: left 0.25s;
+            }
+          }
+
+          .content{
+            .poster{
+             
+            }
+          }
+        }
+      }
+    }
+  }
+}

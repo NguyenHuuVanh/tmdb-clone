@@ -19,7 +19,8 @@ header ul {
   background-color: rgba(var(--tmdbDrakBlue), 1);
   height: 64px;
   color: #fff;
-  transition: top 0.2s linear;
+  transition: top 0.2s linear 0s;
+  z-index: 9999;
 
   a {
     color: #fff;
@@ -104,8 +105,9 @@ header ul {
           display: flex;
           align-items: center;
           justify-content: center;
+          position: relative;
 
-          div {
+          div.language {
             text-align: center;
             width: 28px;
             height: 26px;
@@ -117,6 +119,7 @@ header ul {
             color: #fff;
             font-weight: 400;
             font-size: 14.4px;
+            user-select: none;
 
             &:hover {
               cursor: pointer;
@@ -126,7 +129,8 @@ header ul {
           }
         }
 
-        .search {
+        .search,
+        .close_button {
           height: 100%;
           width: 100%;
           display: inline-flex;
@@ -138,6 +142,76 @@ header ul {
             background-color: transparent;
             width: 29.11px;
             height: 29.11px;
+          }
+
+          .closeIcon {
+            background-image: url("https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-599-menu-close-7400e9a2ea92ad8d7cccf18d1ea34cd690790638a6e7768922eaef6e07109723.svg");
+            background-color: transparent;
+            width: 29.11px;
+            height: 29.11px;
+            filter: invert(1);
+          }
+        }
+
+        .primary {
+          .translate {
+            div.language {
+              position: relative;
+            }
+          }
+        }
+
+        .primary li.notifications {
+          position: relative;
+          top: 0;
+          left: 0;
+
+          .badge {
+            position: absolute;
+            top: -4px;
+            right: -10px;
+            width: 15px;
+            height: 15px;
+            line-height: 0;
+            border-radius: 50%;
+            box-sizing: border-box;
+            z-index: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #c61439;
+
+            .count {
+              display: inline-flex;
+              align-items: center;
+              align-content: center;
+              justify-content: center;
+              font-size: 0.6em;
+              font-family: source-sans-pro-medium;
+              color: #fff;
+              z-index: 1;
+            }
+          }
+        }
+
+        .primary li.user {
+          a {
+            display: block;
+            padding: 4px 0;
+
+            span {
+              display: flex;
+    align-items: center;
+    justify-content: center;
+              width: 32px;
+              height: 32px;
+              text-align: center;
+              text-transform: uppercase;
+              border-radius: 50%;
+              color: #fff;
+              font-size: 1.44rem;
+              font-family: source-sans-pro-medium;
+            }
           }
         }
 
@@ -178,8 +252,15 @@ header ul {
   .sub_dropdown-item {
     list-style-type: none;
     height: 30px;
+    width: 100%;
+    transition: all 0.1s linear;
+    &:hover {
+      color: #16181b;
+      background-color: #f8f9fa;
+    }
 
     .sub_dropdown-link {
+      cursor: pointer;
       text-decoration: none;
       padding: 3px 64px 3px 24px;
       color: #212529;
@@ -189,7 +270,79 @@ header ul {
 }
 
 div[data-tippy-root] {
-  max-width: 191.6px;
-  height: 137.6px;
+  max-width: 241px;
+  max-height: 137.6px;
   box-sizing: content-box;
+}
+
+div[data-tippy-root]#tippy-12 {
+  top: 90px;
+}
+
+.tooltip-content {
+  min-width: 150px;
+  width: auto;
+  background-color: #fff;
+  color: #000;
+  border-radius: 4px;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  font-family: source-sans-pro-regular;
+  border: 1px solid rgba(33, 37, 41, 0.15);
+
+  .settings_content {
+    padding: 12.8px;
+  }
+}
+
+.hidden {
+  top: -64px;
+}
+
+.appear {
+  top: 0;
+}
+
+div.settings_content div.group,
+div.settings_content div.group.no_pad {
+  border-top: 1px solid rgba(33, 37, 41, 0.15);
+  padding: 4px 0;
+}
+
+div.settings_content div.group.no_pad {
+  border: 0;
+}
+
+div.settings_content div.group p {
+  margin: 0;
+  padding: 6px 20px;
+  font-size: 1.44rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  align-items: center;
+
+  &:hover {
+    background-color: rgba(var(--tmdbDarkBlue), 1);
+  }
+}
+
+div.settings_content div.group p:hover a {
+  color: #fff;
+}
+
+div.settings_content div.group a {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.6);
+  background-color: transparent;
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+.settings_content.no_pad {
+  padding: 0;
 }
