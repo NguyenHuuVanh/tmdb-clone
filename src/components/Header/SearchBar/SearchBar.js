@@ -10,7 +10,6 @@ const cx = classNames.bind(styles);
 const SearchBar = () => {
   const {ref, isComponentVisible, setIsComponentVisible} = useComponentVisible(true);
   const [isVisibleLoading, setIsVisibleLoading] = useState(true);
-  const [dataMovieTrendingToday, setDataMovieTrendingToday] = useState([]);
   const [dataMovieSearch, setDataMovieSearch] = useState([]);
   const [search, setSearch] = useState();
   const inputRef = useRef();
@@ -30,19 +29,42 @@ const SearchBar = () => {
     return data;
   };
 
-  const movieTredingToday = async () => {
+  const DefaultData = async () => {
     const responsive = await fetch(ApiLinks.apiTrendingToday);
     const data = responsive.json();
+    return data;
+  };
+
+  const changeApi = () => {
+    let data = [];
+    if (search === "" || search === null || search === undefined) {
+      data = DefaultData()
+        .then((movie) => {
+          setDataMovieSearch(movie.results);
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    } else {
+      data = multiSearch()
+        .then((movie) => {
+          setDataMovieSearch(movie.results);
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    }
     return data;
   };
 
   const handleClick = () => {
     inputRef.current.focus();
     setSearch("");
-    setIsComponentVisible(true);
+    setIsComponentVisible(false);
     setIsVisibleLoading(true);
     setTimeout(() => {
       setIsVisibleLoading(false);
+      setIsComponentVisible(true);
     }, 3000);
   };
 
@@ -63,21 +85,7 @@ const SearchBar = () => {
       setIsVisibleLoading(false);
     }, 3000);
 
-    movieTredingToday()
-      .then((movie) => {
-        setDataMovieTrendingToday(movie.results);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-
-    multiSearch()
-      .then((movie) => {
-        setDataMovieSearch(movie.results);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+    changeApi();
   }, [search]);
 
   return (
