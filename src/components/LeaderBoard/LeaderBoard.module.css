@@ -1,0 +1,12 @@
+.column_content {
+  margin-top: 20px;
+}
+.column_content ol {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  list-style-position: inside;
+  display: flex;
+  flex-wrap: wrap;
+}/*# sourceMappingURL=LeaderBoard.module.css.map */

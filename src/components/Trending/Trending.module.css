@@ -1,0 +1,103 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+.container .trending {
+  background-image: url("../../assets/svgs/trending-bg.svg");
+  background-position: 50% 200px;
+  background-size: var(--maxPrimaryPageWidth);
+  background-repeat: no-repeat;
+}
+.container .trending .content {
+  padding-top: 30px;
+  width: 100%;
+}
+.container .trending .content .column {
+  width: 100%;
+}
+.container .trending .content .column .header {
+  padding: 0 40px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+}
+.container .trending .content .column .header h2 {
+  margin-right: 20px;
+  white-space: nowrap;
+  font-size: 2.4rem;
+  font-family: source-sans-pro-medium;
+}
+.container .trending .content .column .header .selector {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  align-items: stretch;
+  border: 1px solid rgba(var(--tmdbDarkBlue), 1);
+  border-radius: 30px;
+}
+.container .trending .content .column .header .selector h3 a {
+  transition: -webkit-text-fill-color 0.5s;
+  color: rgba(var(--tmdbDarkBlue), 1);
+  text-decoration: none;
+}
+.container .trending .content .column .header .selector h3 .glyphicons_v2 {
+  top: 3px;
+  display: none;
+  margin-left: 4px;
+  opacity: 1;
+  filter: invert(89%) sepia(21%) saturate(454%) hue-rotate(75deg) brightness(104%) contrast(99%);
+}
+.container .trending .content .column .header .selector .background {
+  z-index: -1;
+  background: rgba(var(--tmdbDarkBlue), 1);
+  border-radius: 30px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: left 0.25s;
+}
+.container .trending .content .column .trending_scroller {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container .trending .content .column .trending_scroller .column_content {
+  padding: 20px 0;
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  transition: height 0.5s linear;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: var(--maxPrimaryPageWidth);
+  gap: 20px;
+  height: auto;
+}
+.container .trending .content .column .trending_scroller .card_wrapper:first-child {
+  padding-left: 40px;
+}
+.container .trending .content .column .trending_scroller::after {
+  content: "";
+  width: 60px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0, #fff 100%);
+  will-change: opacity;
+  pointer-events: none;
+}
+
+.boxed {
+  display: flex;
+}/*# sourceMappingURL=Trending.module.css.map */

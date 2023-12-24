@@ -1,8 +1,8 @@
 import React from "react";
 import classNames from "classnames/bind";
 import styles from "./LeaderBoard.module.scss";
-import user_1 from "../assets/images/users/user-1.jpg";
-import user_2 from "../assets/images/users/user-2.jpg";
+import user_1 from "~/assets/images/users/user-1.jpg";
+import user_2 from "~/assets/images/users/user-2.jpg";
 import LeaerBoardCard from "./LeaerBoardCard/LeaerBoardCard";
 
 const cx = classNames.bind(styles);

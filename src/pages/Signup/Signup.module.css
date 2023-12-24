@@ -1,0 +1,188 @@
+.main {
+  margin-top: 64px;
+  width: 100%;
+}
+.main .inner_block .inner_content {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  background-color: #fff;
+}
+.main .inner_block .inner_content .content {
+  width: 100%;
+  padding: 0 40px;
+  max-width: var(--maxPrimaryPageWidth);
+}
+.main .inner_block .inner_content .content .wrapper {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  justify-content: center;
+}
+.main .inner_block .inner_content .content .wrapper .settings_panel {
+  display: block;
+  box-sizing: border-box;
+  min-width: 260px;
+  width: 260px;
+  border: 1px solid rgba(var(--lightGrey), 1);
+  border-radius: var(--imageBorderRadius);
+  overflow: hidden;
+}
+.main .inner_block .inner_content .content .wrapper .settings_panel h3 {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: space-between;
+  margin: 0;
+  font-family: source-sans-pro-medium;
+  padding: 20px;
+  color: #fff;
+  background-color: rgba(var(--accountLightBlue), 1);
+  font-size: 1.92rem;
+}
+.main .inner_block .inner_content .content .wrapper .settings_panel ul {
+  list-style-type: none;
+}
+.main .inner_block .inner_content .content .wrapper .settings_panel ul li {
+  padding-left: 40px;
+  white-space: normal;
+  width: 100%;
+  font-size: 1.6rem;
+  line-height: 22.4px;
+  margin: 0;
+  cursor: pointer;
+  transition: all 0.2s liner;
+}
+.main .inner_block .inner_content .content .wrapper .settings_panel ul li:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+.main .inner_block .inner_content .content .wrapper .settings_panel ul li span {
+  margin-left: -20px;
+  width: 19.2px;
+  height: 19.2px;
+  top: 2px;
+}
+.main .inner_block .inner_content .content .wrapper section.content {
+  width: 100%;
+  display: block;
+  padding: 0;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content {
+  padding-left: 30px;
+  width: 100%;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content h2 {
+  font-size: 2.4rem;
+  margin: 0 0 4px;
+  width: 100%;
+  font-family: source-sans-pro-bold;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content p {
+  margin-top: 10px;
+  padding: 0;
+  font-size: 1.6rem;
+  width: 100%;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content .k-form {
+  margin-top: 10px;
+  width: 100%;
+  font-size: 1.6rem;
+  line-height: 1.5;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content .k-form fieldset {
+  margin-top: 30px;
+  border: 0;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content .k-form fieldset .k-form-field {
+  margin-top: 16px;
+  display: block;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content .k-form fieldset .k-form-field span {
+  font-size: 1.6rem;
+  line-height: 1.5;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content .k-form fieldset .k-form-field input {
+  width: 100%;
+  display: flex;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  outline: none;
+  line-height: 1.5;
+  flex-flow: row nowrap;
+  align-items: center;
+  vertical-align: middle;
+  position: relative;
+  -webkit-appearance: none;
+  border-color: #ced4da;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content .k-form fieldset .k-form-field input:focus-within {
+  border-color: rgba(var(--accountLightBlue), 1);
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content .k-form p {
+  margin-top: 30px;
+  font-size: 1.6rem;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content .k-form .flex {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  font-size: 1.6rem;
+  line-height: 1.5;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content .k-form .flex input {
+  border-color: rgba(var(--accountLightBlue), 1);
+  color: #fff;
+  background-color: rgba(var(--accountLightBlue), 1);
+  font-family: source-sans-pro-bold;
+  -webkit-appearance: button;
+  cursor: pointer;
+  border: 0;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  border-radius: var(--imageBorderRadius);
+  padding: 6px 19.2px;
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content .k-form .flex .reset {
+  margin: 0;
+  margin-left: 10px;
+}
+.main .inner_block .inner_content .content .wrapper section.content .column_content .k-form .flex .reset a {
+  color: rgba(var(--tmdbLightBlue), 1);
+}
+.main .inner_block:first-of-type {
+  margin-top: 20px;
+}
+.main .inner_block:last-of-type {
+  margin-bottom: 20px;
+}
+
+.card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(var(--lightGrey), 1);
+  background-color: #fff;
+}
+
+div.wrapper div.settings_panel.no_margin {
+  margin: 0;
+}
+
+div.wrapper ul.panel.no_scroll {
+  overflow: visible;
+  flex-wrap: wrap;
+}
+
+div.wrapper ul.panel {
+  box-sizing: border-box;
+  padding: 8px 0;
+}/*# sourceMappingURL=Signup.module.css.map */

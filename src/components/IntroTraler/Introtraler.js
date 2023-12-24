@@ -1,15 +1,15 @@
 import {useEffect, useLayoutEffect, useRef, useState} from "react";
 import classNames from "classnames/bind";
 import styles from "./IntroTraler.module.scss";
-import poster from "../assets/images/bg-intro-traler/img1.jpg";
 import CardTVShow from "./CardTVShow/CardTVShow";
-import ApiLinks from "../api/Apis";
+import ApiLinks from "../../api/Apis";
 import {NavLink} from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
 const Introtraler = () => {
   const [tvShow, setTVShow] = useState([]);
+  const [backgroundImage, setBackgroundImage] = useState("");
   const [isSelected, setIsSelected] = useState(false);
   const [todaywidth, setTodayWidth] = useState(0);
   const [thisWeekywidth, setThisweekWidth] = useState(0);
@@ -17,10 +17,20 @@ const Introtraler = () => {
   const h3SecondRef = useRef(0);
   const bgRef = useRef();
 
-  useLayoutEffect(() => {
-    setTodayWidth(h3OneRef.current.offsetWidth);
-    setThisweekWidth(h3SecondRef.current.offsetWidth);
-  });
+  const fetchData = async () => {
+    try {
+      const [apiTvShow, apiPopularMovie] = await Promise.all([
+        fetch(ApiLinks.apiUpcomingMovie),
+        fetch(ApiLinks.apiPopular),
+      ]);
+      const dataTvShow = await apiTvShow.json();
+      const dataPopularMovie = await apiPopularMovie.json();
+      const data = {dataTvShow: dataTvShow, dataPopularMovie: dataPopularMovie};
+      return data;
+    } catch (error) {
+      console.log("🚀 ~ file: Introtraler.js:24 ~ fetchData ~ error:", error);
+    }
+  };
 
   const handleChangeButton = {
     tunrRight: () => {
@@ -35,24 +45,36 @@ const Introtraler = () => {
     },
   };
 
-  const TVShow = async () => {
-    const responsive = await fetch(ApiLinks.apiDiscoverTv);
-    const data = responsive.json();
-    return data;
+  const ChangeButton = () => {
+    if (isSelected === false) {
+      fetchData().then((result) => {
+        setTVShow(result.dataTvShow.results);
+      });
+    } else {
+      fetchData().then((result) => {
+        setTVShow(result.dataPopularMovie.results);
+      });
+    }
   };
 
+  const handleItemHover = (imageUrl) => {
+    setBackgroundImage(imageUrl);
+  };
+
+  useLayoutEffect(() => {
+    setTodayWidth(h3OneRef.current.offsetWidth);
+    setThisweekWidth(h3SecondRef.current.offsetWidth);
+  });
+
   useEffect(() => {
-    TVShow()
-      .then((tv) => {
-        setTVShow(tv.results);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-  }, []);
+    ChangeButton();
+  }, [isSelected]);
 
   return (
-    <section className={cx("inner_content", "bg_image", "bg_center", "video", "no_pad")}>
+    <section
+      className={cx("inner_content", "bg_image", "bg_center", "video", "no_pad")}
+      style={{backgroundImage: `url(${backgroundImage})`}}
+    >
       <div className={cx("column_wrapper")}>
         <div className={cx("traler_content", "media", "discover ", "scroller_wrap")}>
           <div className={cx("traler_content_wrapper", "no_bottom_pad")}>
@@ -86,44 +108,26 @@ const Introtraler = () => {
                 </div>
               </div>
               <div className={cx("content", "scroller", "flex", "loaded")}>
-                {isSelected ? (
-                  tvShow.map((tv) => {
-                    return (
-                      <CardTVShow
-                        image={`https://www.themoviedb.org/t/p/w355_and_h200_multi_faces/${tv.backdrop_path}`}
-                        title={tv.name}
-                        description={tv.name}
-                      />
-                    );
-                  })
-                ) : (
-                  <div className={cx("card", "video", "style_2")}>
-                    <div className={cx("image")}>
-                      <div className={cx("wrapper")}>
-                        <a className={cx("play_traler", "img")} href="#">
-                          <img className={cx("poster", "backdrop")} src={poster} alt="" />
-                          <div className={cx("play")}>
-                            <span className="glyphicons_v2 play invert svg"></span>
-                          </div>
-                        </a>
-                      </div>
-                      <div className={cx("options")}>
-                        <a className={cx("no_click")} href="#">
-                          <div className="glyphicons_v2 circle-more white"></div>
-                        </a>
-                      </div>
-                    </div>
-                    <div className={cx("content")}>
-                      <h2>
-                        <a href="/tv/1433?language=vi" title="American Dad!">
-                          American Dad!
-                        </a>
-                      </h2>
-                      <h3>American Dad: Theatrical Trailer | TBS</h3>
-                    </div>
-                  </div>
-                )}
-
+                {tvShow.map((tv) => {
+                  return (
+                    <CardTVShow
+                      key={tv.id}
+                      onMouseEnter={() =>
+                        handleItemHover(
+                          `https://www.themoviedb.org/t/p/w1920_and_h427_multi_faces/${
+                            tv.poster_path ?? tv.poster_path
+                          }`
+                        )
+                      }
+                      // onMouseLeave={() => setBackgroundImage("")}
+                      image={`https://www.themoviedb.org/t/p/w355_and_h200_multi_faces/${
+                        tv.backdrop_path ?? tv.poster_path
+                      }`}
+                      title={tv.title}
+                      description={tv.original_title}
+                    />
+                  );
+                })}
                 <div className={cx("card", "video", "style_2", "spacer")}></div>
               </div>
             </div>

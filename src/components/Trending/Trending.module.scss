@@ -2,9 +2,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1;
 
   .trending {
-    background-image: url("../assets/svgs/trending-bg.svg");
+    background-image: url("../../assets/svgs/trending-bg.svg");
     background-position: 50% 200px;
     background-size: var(--maxPrimaryPageWidth);
     background-repeat: no-repeat;
@@ -96,7 +97,7 @@
           padding-left: 40px;
          }
 
-          &::after {
+          .is_fading::after {
             content: "";
             width: 60px;
             height: 100%;
@@ -106,8 +107,25 @@
             background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0, #fff 100%);
             will-change: opacity;
             pointer-events: none;
+            opacity: 1;
+            transition: linear 0.3s;
+          }
+
+          .is_hidden::after {
+            content: "";
+            width: 60px;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0, #fff 100%);
+            will-change: opacity;
+            pointer-events: none;
+            opacity: 0;
+            transition: linear 0.3s;
           }
         }
+
       }
     }
   }

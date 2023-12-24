@@ -4,7 +4,7 @@ import classNames from "classnames/bind";
 
 import styles from "./Trending.module.scss";
 import Card from "./Card/Card";
-import ApiLinks from "../api/Apis";
+import ApiLinks from "~/api/Apis";
 
 const cx = classNames.bind(styles);
 
@@ -17,7 +17,9 @@ const Trending = () => {
   const [thisWeekywidth, setThisweekWidth] = useState(0);
   const h3OneRef = useRef(0);
   const h3SecondRef = useRef(0);
+  const [isScrolled, setIsScrolled] = useState(false);
   const bgRef = useRef();
+  const scrollRef = useRef();
 
   useLayoutEffect(() => {
     setTodayWidth(h3OneRef.current.offsetWidth);
@@ -47,6 +49,14 @@ const Trending = () => {
     const responsive = await fetch(ApiLinks.apiTrendingWeek);
     const data = responsive.json();
     return data;
+  };
+
+  const handleScroll = () => {
+    if (scrollRef.current.scrollLeft >= 50) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
   };
 
   useEffect(() => {
@@ -83,7 +93,7 @@ const Trending = () => {
                     >
                       <h3 ref={h3OneRef}>
                         <NavLink to="/">
-                          Today <span className={cx("glyphicons_v2", " chevron-down")}></span>
+                          Today <span className={cx("glyphicons_v2", "chevron-down")}></span>
                         </NavLink>
                       </h3>
                       <div className={cx("background")} ref={bgRef}></div>
@@ -102,7 +112,11 @@ const Trending = () => {
                 </div>
               </div>
               <div className={cx("trending_scroller")}>
-                <div className={cx("column_content", "flex", "scroller", "loaded")}>
+                <div
+                  className={cx("column_content", "flex", "scroller", "loaded", isScrolled ? "is_hidden" : "is_fading")}
+                  ref={scrollRef}
+                  onScroll={handleScroll}
+                >
                   {isSelected == false
                     ? dataMovieTrendingToday.map((movie) => {
                         return (
@@ -115,6 +129,9 @@ const Trending = () => {
                               vote_count={movie.vote_count}
                               original_title={movie.title}
                               release_date={movie.release_date}
+                              id={movie.id}
+                              media_type={movie.media_type}
+                              original_language={movie.original_language}
                             />
                           </div>
                         );
@@ -130,6 +147,9 @@ const Trending = () => {
                               vote_count={movie.vote_count}
                               original_title={movie.original_title}
                               release_date={movie.release_date}
+                              id={movie.id}
+                              media_type={movie.media_type}
+                              original_language={movie.original_language}
                             />
                           </div>
                         );

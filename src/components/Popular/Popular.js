@@ -2,7 +2,7 @@ import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import classNames from "classnames/bind";
 import styles from "./Popular.module.scss";
 import Card from "../Trending/Card/Card";
-import ApiLinks from "../api/Apis";
+import ApiLinks from "~/api/Apis";
 import {NavLink} from "react-router-dom";
 
 const cx = classNames.bind(styles);
@@ -14,9 +14,11 @@ const Popular = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [todaywidth, setTodayWidth] = useState(0);
   const [thisWeekywidth, setThisweekWidth] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
   const h3OneRef = useRef(0);
   const h3SecondRef = useRef(0);
   const bgRef = useRef();
+  const scrollRef = useRef();
 
   useLayoutEffect(() => {
     setTodayWidth(h3OneRef.current.offsetWidth);
@@ -46,6 +48,14 @@ const Popular = () => {
     const responsive = await fetch(ApiLinks.apiUpcomingMovie);
     const data = responsive.json();
     return data;
+  };
+
+  const handleScroll = () => {
+    if (scrollRef.current.scrollLeft >= 50) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
   };
 
   useEffect(() => {
@@ -115,7 +125,11 @@ const Popular = () => {
               </div>
             </div>
             <div className={cx("media", "trending_scroller", "discover", "scroller_wrap")}>
-              <div className={cx("content", "flex", "scroller", "loaded")}>
+              <div
+                className={cx("content", "flex", "scroller", "loaded", isScrolled ? "is_hidden" : "is_fading")}
+                ref={scrollRef}
+                onScroll={handleScroll}
+              >
                 {isSelected
                   ? dataInTheaters.map((tv) => {
                       return (
