@@ -24,7 +24,7 @@ const Card = ({
   ...props
 }) => {
   const {ref, isComponentVisible, setIsComponentVisible} = useComponentVisible(false);
-  const dateString = release_date || first_air_date.split("-");
+  // const dateString = release_date || first_air_date.split("-");
 
   const formatterDate = () => {
     if (first_air_date !== "") {

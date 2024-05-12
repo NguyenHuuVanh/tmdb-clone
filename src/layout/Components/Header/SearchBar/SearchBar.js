@@ -3,7 +3,8 @@ import {useNavigate, useSearchParams} from "react-router-dom";
 import useComponentVisible from "~/hooks/useComponentVisible";
 import classNames from "classnames/bind";
 import styles from "./SearchBar.module.scss";
-import ApiLinks from "~/api/Apis";
+import ApiLinks from "~/services/api/Apis";
+import http from "~/services/axios/axios";
 
 const cx = classNames.bind(styles);
 
@@ -25,36 +26,12 @@ const SearchBar = () => {
     setSearch(e.target.value);
   };
 
-  const multiSearch = async () => {
-    const responsive = await fetch(ApiLinks.apiSearch(search));
-    const data = responsive.json();
-    return data;
-  };
-
-  const DefaultData = async () => {
-    const responsive = await fetch(ApiLinks.apiTrendingToday);
-    const data = responsive.json();
-    return data;
-  };
-
   const changeApi = () => {
     let data = [];
     if (search === "" || search === null || search === undefined) {
-      data = DefaultData()
-        .then((movie) => {
-          setDataMovieSearch(movie.results);
-        })
-        .catch((error) => {
-          console.log(error.message);
-        });
+      data = http.get(ApiLinks.apiTrendingToday).then((res) => setDataMovieSearch(res.data.results));
     } else {
-      data = multiSearch()
-        .then((movie) => {
-          setDataMovieSearch(movie.results);
-        })
-        .catch((error) => {
-          console.log(error.message);
-        });
+      data = http.get(ApiLinks.apiSearch(search)).then((res) => setDataMovieSearch(res.data.results));
     }
     return data;
   };
@@ -71,7 +48,7 @@ const SearchBar = () => {
   };
 
   const handleNavigate = (e) => {
-    navigate(`search/movie?query=${search}`);
+    navigate(`search/movie?query=${search}?language=en`);
     setIsComponentVisible(false);
   };
 
@@ -102,7 +79,7 @@ const SearchBar = () => {
         <section className={cx("search")}>
           <div className={cx("sub_media")}>
             <form className={cx("search_form")}>
-              <label htmlFor="">
+              <label htmlFor="search">
                 <span className={cx("search_input")}>
                   <input
                     onChange={handleInput}
@@ -113,6 +90,7 @@ const SearchBar = () => {
                     onKeyDown={handleSubmitData}
                     type="text"
                     placeholder="Search for a movie, tv show, person..."
+                    id="search"
                   />
                   {isVisibleLoading ? (
                     <span className={cx("loading")}></span>

@@ -3,29 +3,32 @@ import classNames from "classnames/bind";
 import styles from "./Overlay.module.scss";
 
 import {AiFillCaretDown} from "react-icons/ai";
-import ApiLinks from "~/api/Apis";
+import ApiLinks from "~/services/api/Apis";
+import http from "~/services/axios/axios";
 
 const cx = classNames.bind(styles);
 
-const OverlayContent = ({onClick, id, type}) => {
+const OverlayContent = ({onClick, id, type, images}) => {
+  console.log("🚀 ~ OverlayContent ~ dataImages:", images);
   const [dataImages, setDataImages] = useState([]);
   const [currentImage, setCurrentImage] = useState(0);
 
-  const images = async () => {
-    const responsive = await fetch(ApiLinks.apiImagesMovie(id, type));
-    const data = responsive.json();
-    return data;
-  };
+  // const fetchDataImages = () => {
+  //   http
+  //     .get(ApiLinks.apiImagesMovie(id, type))
+  //     .then((res) => setDataImages(res.data.backdrops))
+  //     .catch((error) => console.log(error));
+  // };
 
-  const imagesList = dataImages.map((image) => {
+  const imagesList = images.images.posters.map((image) => {
     return image.file_path;
   });
 
-  const imageHeight = dataImages.map((image) => {
+  const imageHeight = images.images.posters.map((image) => {
     return image.height;
   });
 
-  const imageWidth = dataImages.map((image) => {
+  const imageWidth = images.images.posters.map((image) => {
     return image.width;
   });
 
@@ -38,15 +41,7 @@ const OverlayContent = ({onClick, id, type}) => {
     },
   };
 
-  useEffect(() => {
-    images()
-      .then((image) => {
-        setDataImages(image.backdrops);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <>
@@ -105,11 +100,7 @@ const OverlayContent = ({onClick, id, type}) => {
                       <span className={cx("glyphicons_v2", "check-sign", "x1", "ratio")}></span>
                     </p>
 
-                    <label
-                      className={cx("k-form-field")}
-                      for="zoomed_image_language_6464e97c9f37b0015cc39f0b"
-                      id="zoomed_image_language_6464e97c9f37b0015cc39f0b_label"
-                    >
+                    <label className={cx("k-form-field")}>
                       <span className={cx("flex")}>Language</span>
                       <span
                         className={cx("k-widget", "k-dropdown")}

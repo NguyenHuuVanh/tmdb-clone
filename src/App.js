@@ -1,4 +1,4 @@
-import {Routes, Route, useParams, useLocation} from "react-router-dom";
+import {Routes, Route} from "react-router-dom";
 import "./App.css";
 import "./components/GlobalStyle/GlobalStyle.scss";
 
@@ -15,10 +15,19 @@ import Login from "./pages/Login/Login";
 import Signup from "./pages/Signup/Signup";
 import DataSearch from "./pages/DataSearch/DataSearch";
 import BackDrop from "./components/BackDrop/BackDrop";
+import ScrollTopBtn from "./layout/Components/ScrollTopBtn/ScrollTopBtn";
+import ScrollToTop from "./layout/Components/ScrollToTop/ScrollToTop";
+import ReviewPost from "./components/Reviews/ReviewPost/ReviewPost";
+import ShortCutBar from "./layout/Components/ShortCutBar/ShortCutBar";
+import ReviewList from "./components/Reviews/ReviewList/ReviewList";
+import VideoList from "./components/BackDrop/VideoList/VideoList";
+import ImageList from "./components/BackDrop/ImageList/ImageList";
+import PostersList from "./components/BackDrop/PostersList/PostersList";
 
 function App() {
   return (
     <div className="App">
+      <ScrollToTop />
       <DefaultHeader />
       <Header />
       <Routes>
@@ -32,16 +41,28 @@ function App() {
               <Popular />
               <Community />
               <LeaderBoard />
+              <ScrollTopBtn />
             </>
           }
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="search/movie/nameExample" element={<DataSearch />} />
+        <Route path={"/login"} element={<Login />} />
+        <Route path={"/signup"} element={<Signup />} />
+        <Route path={"search/:type/?query=:name"} element={<DataSearch />} />
         <Route path={``} element={<DataSearch />} />
-        <Route path={"movie/:movieId"} element={<BackDrop />} />
-        <Route path={"tv/:movieId"} element={<BackDrop />} />
+        <Route path={":type/:movieId"} element={<BackDrop />} />
         <Route path={"/cast?language=en"} element={<Login />} />
+        <Route path={"/fullreview/:type/:id/:idPost"} element={<ReviewPost />} />
+        <Route
+          path={"/:type/:name/reviews"}
+          element={
+            <>
+              <ReviewList />
+            </>
+          }
+        />
+        <Route path={"/:type/:id/videos"} element={<VideoList />} />
+        <Route path={"/:type/:id/backdrops"} element={<ImageList />} />
+        <Route path={"/:type/:id/posters"} element={<PostersList />} />
       </Routes>
       <Footer />
     </div>

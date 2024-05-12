@@ -2,8 +2,9 @@ import {useEffect, useLayoutEffect, useRef, useState} from "react";
 import classNames from "classnames/bind";
 import styles from "./IntroTraler.module.scss";
 import CardTVShow from "./CardTVShow/CardTVShow";
-import ApiLinks from "../../api/Apis";
+import ApiLinks from "../../services/api/Apis";
 import {NavLink} from "react-router-dom";
+import http from "~/services/axios/axios";
 
 const cx = classNames.bind(styles);
 
@@ -17,19 +18,17 @@ const Introtraler = () => {
   const h3SecondRef = useRef(0);
   const bgRef = useRef();
 
-  const fetchData = async () => {
-    try {
-      const [apiTvShow, apiPopularMovie] = await Promise.all([
-        fetch(ApiLinks.apiUpcomingMovie),
-        fetch(ApiLinks.apiPopular),
-      ]);
-      const dataTvShow = await apiTvShow.json();
-      const dataPopularMovie = await apiPopularMovie.json();
-      const data = {dataTvShow: dataTvShow, dataPopularMovie: dataPopularMovie};
-      return data;
-    } catch (error) {
-      console.log("🚀 ~ file: Introtraler.js:24 ~ fetchData ~ error:", error);
-    }
+  const fetchData = {
+    dataTvShow: () => {
+      http.get(ApiLinks.apiUpcomingMovie).then((res) => {
+        setTVShow(res.data.results);
+      });
+    },
+    dataPopularMovie: () => {
+      http.get(ApiLinks.apiPopular).then((res) => {
+        setTVShow(res.data.results);
+      });
+    },
   };
 
   const handleChangeButton = {
@@ -45,18 +44,6 @@ const Introtraler = () => {
     },
   };
 
-  const ChangeButton = () => {
-    if (isSelected === false) {
-      fetchData().then((result) => {
-        setTVShow(result.dataTvShow.results);
-      });
-    } else {
-      fetchData().then((result) => {
-        setTVShow(result.dataPopularMovie.results);
-      });
-    }
-  };
-
   const handleItemHover = (imageUrl) => {
     setBackgroundImage(imageUrl);
   };
@@ -67,7 +54,7 @@ const Introtraler = () => {
   });
 
   useEffect(() => {
-    ChangeButton();
+    isSelected ? fetchData.dataTvShow() : fetchData.dataPopularMovie();
   }, [isSelected]);
 
   return (
@@ -108,7 +95,7 @@ const Introtraler = () => {
                 </div>
               </div>
               <div className={cx("content", "scroller", "flex", "loaded")}>
-                {tvShow.map((tv) => {
+                {tvShow.map((tv, index) => {
                   return (
                     <CardTVShow
                       key={tv.id}

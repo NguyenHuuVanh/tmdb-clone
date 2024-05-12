@@ -2,8 +2,9 @@ import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import classNames from "classnames/bind";
 import styles from "./Popular.module.scss";
 import Card from "../Trending/Card/Card";
-import ApiLinks from "~/api/Apis";
+import ApiLinks from "~/services/api/Apis";
 import {NavLink} from "react-router-dom";
+import http from "~/services/axios/axios";
 
 const cx = classNames.bind(styles);
 
@@ -38,16 +39,18 @@ const Popular = () => {
     },
   };
 
-  const movieTVPopular = async () => {
-    const responsive = await fetch(ApiLinks.apiTVPopular);
-    const data = responsive.json();
-    return data;
+  const movieTVPopular = () => {
+    http
+      .get(ApiLinks.apiTVPopular)
+      .then((res) => setDataPopular(res.data.results))
+      .catch((error) => console.log(error));
   };
 
-  const movieInTheaters = async () => {
-    const responsive = await fetch(ApiLinks.apiUpcomingMovie);
-    const data = responsive.json();
-    return data;
+  const movieInTheaters = () => {
+    http
+      .get(ApiLinks.apiUpcomingMovie)
+      .then((res) => setDataInTheaters(res.data.results))
+      .catch((error) => console.log(error));
   };
 
   const handleScroll = () => {
@@ -59,21 +62,8 @@ const Popular = () => {
   };
 
   useEffect(() => {
-    movieTVPopular()
-      .then((movie) => {
-        setDataPopular(movie.results);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-
-    movieInTheaters()
-      .then((movie) => {
-        setDataInTheaters(movie.results);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+    movieTVPopular();
+    movieInTheaters();
   }, []);
   return (
     <section className={cx("inner_content", "no_pad", "m_auto")}>

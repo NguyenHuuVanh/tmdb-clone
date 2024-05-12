@@ -45,13 +45,14 @@ const Main = () => {
             </div>
             <div className={cx("search")}>
               <form className={cx("inner_search")}>
-                <label htmlFor="">
+                <label htmlFor="search">
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={searchValue}
                     className={cx("inner_input")}
                     placeholder="Search for a movie, tv show, person......"
+                    id="search"
                   />
                 </label>
                 <input

@@ -2,157 +2,176 @@ import {useEffect, useRef, useState} from "react";
 import {Link, NavLink, useLocation, useParams} from "react-router-dom";
 
 import classNames from "classnames/bind";
+import http from "~/services/axios/axios";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
-import ApiLinks from "~/api/Apis";
+import "react-circular-progressbar/dist/styles.css";
+import {v4 as uuidv4} from "uuid";
+import ApiLinks from "~/services/api/Apis";
 import styles from "./BackDrop.module.scss";
 import ShortCutBar from "~/layout/Components/ShortCutBar/ShortCutBar";
 import OverlayContent from "./OverlayContent/OverlayContent";
 import Iframe from "./IframeContent/Iframe";
-import {CircularProgressbar, buildStyles} from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
+import defaultImage from "~/assets/images/default-img/defaultImg.jpg";
+import Header from "./Header/Header";
+import Reviews from "../Reviews/Reviews";
+import {Box, LinearProgress, Skeleton} from "@mui/material";
+import expense from "~/services/utils/ChangeMoneyUtils";
+import Recommentdation from "./Recommentdation/Recommentdation";
 
 const cx = classNames.bind(styles);
+
 const BackDrop = () => {
   const {movieId} = useParams();
   const {pathname} = useLocation();
   const [id] = movieId.split("-");
   const matchResult = pathname.match(/^\s*\/(\w+)/);
   const resultType = matchResult ? matchResult[1] : null;
-  const [visibleCards, setVisibleCards] = useState(9);
 
   const [isShowOverlay, setIsShowOverlay] = useState(false);
   const [isShowIframe, setIsShowIframe] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [dataMovie, setDataMovie] = useState([]);
-  console.log("🚀 ~ file: BackDrop.js:28 ~ BackDrop ~ dataMovie:", dataMovie);
-  const [dataMovieTrendingWeek, setDataMovieTrendingWeek] = useState([]);
   const [dataActors, setDataActors] = useState([]);
   const [dataCrew, setDataCrew] = useState([]);
-  console.log("🚀 ~ file: BackDrop.js:32 ~ BackDrop ~ dataCrew:", dataCrew);
   const [dataUrlTraler, setDataUrlTraler] = useState([]);
   const [dataImages, setDataImages] = useState([]);
-  const [dataGenres, setDataGenres] = useState([]);
   const [dataSocial, setDataSocial] = useState([]);
-  const [dataCertificationTv, setDataCertificationTv] = useState([]);
-  const [dataCertificationMovie, setDataCertificationMovie] = useState([]);
   const [dataKeywords, setDataKeywords] = useState([]);
-  const [logoNetwork, setLogoNetwork] = useState([]);
+  const [dataReview, setDataReview] = useState([]);
+  const [dataRecommentdation, setDataRecommentdation] = useState([]);
+  console.log("🚀 ~ BackDrop ~ dataRecommentdation:", dataRecommentdation);
+  const [activeTab, setActiveTab] = useState("first");
+  const [activeTabMedia, setActiveTabMedia] = useState("popular");
+  const [isLoading, setIsLoading] = useState(true);
+  console.log(dataMovie);
 
   const scrollerRefOne = useRef();
   const scrollerRefSecond = useRef();
+  const scrollerRefTheree = useRef();
 
-  // dùng promise.all để fetch nhiều api
-  const fetchData = async () => {
+  const [loading, setLoading] = useState(false);
+  const [dataVideos, setDataVideos] = useState([]);
+
+  const randomID = uuidv4();
+
+  const fetchDataVideos = async () => {
     try {
-      const [
-        apiMovieInfomation,
-        apiTrendingWeek,
-        apiActors,
-        apiUrlTraler,
-        apiImagesMovie,
-        apiGenres,
-        apiSocial,
-        apiCertificationTv,
-        apiCertificationMovie,
-        apiKeyWords,
-      ] = await Promise.all([
-        fetch(ApiLinks.apiMovieInfomation(id, resultType)),
-        fetch(ApiLinks.apiTrendingWeek),
-        fetch(ApiLinks.apiActors(id, resultType)),
-        fetch(ApiLinks.apiUrlTraler(id, resultType)),
-        fetch(ApiLinks.apiImagesMovie(id, resultType)),
-        fetch(ApiLinks.apiGenres(resultType)),
-        fetch(ApiLinks.apiMovieSocial(id, resultType)),
-        fetch(ApiLinks.apiCertificationTv(id)),
-        fetch(ApiLinks.apiCertificationMovie(id)),
-        fetch(ApiLinks.apiKeywordsRecommendation(id, resultType)),
-      ]);
-      const dataMovieInfomation = await apiMovieInfomation.json();
-      const dataTrendingWeek = await apiTrendingWeek.json();
-      const dataActors = await apiActors.json();
-      const dataUrlTrailer = await apiUrlTraler.json();
-      const dataImagesMovie = await apiImagesMovie.json();
-      const dataGenres = await apiGenres.json();
-      const dataSocial = await apiSocial.json();
-      const dataCertificationTv = await apiCertificationTv.json();
-      const dataCertificationMovie = await apiCertificationMovie.json();
-      const dataKeywords = await apiKeyWords.json();
-
-      setDataMovie(dataMovieInfomation);
-      setDataMovieTrendingWeek(dataTrendingWeek);
-      setDataActors(dataActors.cast);
-      setDataCrew(dataActors.crew);
-      setDataUrlTraler(dataUrlTrailer.results);
-      setDataImages(dataImagesMovie.backdrops);
-      setDataGenres(dataGenres.genres);
-      setDataSocial(dataSocial);
-      setDataCertificationTv(dataCertificationTv.results);
-      setDataCertificationMovie(dataCertificationMovie.results);
-      setDataKeywords(dataKeywords.results ?? dataKeywords.keywords);
-
-      // console.log(dataCertificationTv);
+      setLoading(true);
+      const response = await http.get(ApiLinks.apiUrlTraler(id, resultType));
+      setDataVideos(response.data.results);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     } catch (error) {
-      console.log("🚀 ~ file: BackDrop.js:45 ~ fetchData ~ error:", error);
+      console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
-  const formattedDate = () => {
-    const originalDate = new Date(dataMovie.release_date || dataMovie.first_air_date);
-    const day = originalDate.getDate().toString().padStart(2, "0");
-    const month = (originalDate.getMonth() + 1).toString().padStart(2, "0");
-    const year = originalDate.getFullYear();
-    const formattedDateString = `${day}/${month}/${year}`;
-    return formattedDateString;
-  };
-
-  const getYear = () => {
-    if (resultType === "movie") {
-      const year = new Date(dataMovie.release_date).getFullYear().toString();
-      return `(${year})`;
-    }
-    const year = new Date(dataMovie.first_air_date).getFullYear().toString();
-    return `(${year})`;
+  const getDatas = {
+    dataMovieInfomation: () => {
+      setLoading(true);
+      http
+        .get(ApiLinks.apiMovieInfomation(id, resultType))
+        .then((response) => {
+          setDataMovie(response.data);
+          setTimeout(() => {
+            setLoading(false);
+          }, 2000);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    dataImfomationUrlTraler: () => {
+      http
+        .get(ApiLinks.apiUrlTraler(id, resultType))
+        .then((res) => {
+          setDataUrlTraler(res.data.results);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    dataImagesMovie: () => {
+      http
+        .get(ApiLinks.apiImagesMovie(id, resultType))
+        .then((res) => {
+          setDataImages(res.data.backdrops);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    dataInfomationSocial: () => {
+      http
+        .get(ApiLinks.apiMovieSocial(id, resultType))
+        .then((res) => {
+          setDataSocial(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    dataInfomationActors: () => {
+      http
+        .get(ApiLinks.apiActors(id, resultType))
+        .then((res) => {
+          setDataActors(res.data.crew);
+          setDataCrew(res.data.cast);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    dataInfomationKeywords: () => {
+      http
+        .get(ApiLinks.apiKeywordsRecommendation(id, resultType))
+        .then((res) => {
+          setDataKeywords(res.data.results ?? res.data.keywords);
+        })
+        .catch((error) => console.log(error));
+    },
+    dataPostReview: () => {
+      http
+        .get(ApiLinks.apiPostReview(id, resultType))
+        .then((res) => {
+          setDataReview(res.data.results);
+        })
+        .catch((error) => console.log(error));
+    },
+    dataRecommentdation: () => {
+      http
+        .get(ApiLinks.apiRecommendations(id, resultType))
+        .then((response) => {
+          setDataRecommentdation(response.data.results);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
   };
 
   const playTrailer = () => {
     setIsShowIframe(true);
   };
-  const finalTtraler = dataUrlTraler.find((url) => url.name === "Official Trailer" || url.type === "Trailer");
+
+  const finalTtraler = dataUrlTraler.find(
+    (url) => url.name === "Official Trailer" || url.type === "Trailer" || url.site === "YouTube"
+  );
 
   const imagesList = dataImages.map((image) => {
     return image.file_path;
   });
 
-  const expense = (money) => {
-    const formattedBudget = money.toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD",
-    });
-    const result = money === 0 ? "-" : formattedBudget;
-    return result;
-  };
-
-  const runtime = (totalMinutes) => {
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    const formattedTime = `${hours}h ${minutes}m`;
-    return formattedTime;
-  };
-
-  const genreId = () => {
-    return dataMovie.genres.map((genre) => {
-      return genre.id;
-    });
-  };
-  const matchedGenreNames = dataGenres.filter((genre) => genreId().includes(genre.id)).map((genre) => genre.name);
-
-  const handleShowOverlay = () => {
-    setIsShowOverlay(true);
-  };
-
-  const handleHideOverlay = () => {
-    setIsShowOverlay(false);
+  const showOverlay = {
+    handleShowOverlay: () => {
+      setIsShowOverlay(true);
+    },
+    handleHideOverlay: () => {
+      setIsShowOverlay(false);
+    },
   };
 
   const handleHideIframe = () => {
@@ -161,319 +180,71 @@ const BackDrop = () => {
   };
 
   const handleScroll = () => {
-    if (scrollerRefOne.current.scrollLeft >= 50 || scrollerRefSecond.current.scrollLeft >= 50) {
+    if (
+      scrollerRefOne.current.scrollLeft >= 50 ||
+      scrollerRefSecond.current.scrollLeft >= 50 ||
+      scrollerRefTheree.current.scrollLeft >= 50
+    ) {
       setIsScrolled(true);
     } else {
       setIsScrolled(false);
     }
   };
 
-  const rateting = () => {
-    const rateting = Math.round(dataMovie.vote_average * 10);
-    return rateting;
+  const networkCompanies = () => {
+    const data = dataMovie.networks;
+    return data && data.map((compani) => compani.logo_path);
   };
 
-  const certification = () => {
-    if (resultType === "tv") {
-      return dataCertificationTv;
-    } else return dataCertificationMovie;
+  const changeTab = {
+    social: (name) => {
+      setActiveTab(name);
+    },
+    media: (name) => {
+      setActiveTabMedia(name);
+    },
   };
-
-  const matchedCertification = () => {
-    if (resultType === "tv") {
-      return certification()
-        .filter((certification) => {
-          return certification.iso_3166_1 === "US";
-        })
-        .map((cer) => {
-          return cer.rating;
-        });
-    } else {
-      return certification()
-        .filter((certification) => {
-          return certification.iso_3166_1 === "US";
-        })
-        .map((certification) => {
-          return (
-            certification.release_dates.map((cer) => {
-              return cer.certification;
-            })[0] ||
-            certification.release_dates.map((cer) => {
-              return cer.certification;
-            })[1] ||
-            certification.release_dates.map((cer) => {
-              return cer.certification;
-            })[2] ||
-            certification.release_dates.map((cer) => {
-              return cer.certification;
-            })[3]
-          );
-        });
-    }
+  const filteredActor = () => {
+    const actors = dataActors.filter((item, index, array) => {
+      return array.findIndex((obj) => obj.name === item.name) === index;
+    });
+    return actors;
   };
-
-  const networkCompanies = async () => {
-    try {
-      const data = await dataMovie.networks;
-      // const logo = data.map((compani) => compani.logo_path);
-      const logo = data[0].logo_path;
-      setLogoNetwork(logo);
-    } catch (error) {
-      console.log(error);
-      return [];
-    }
-  };
-
-  if (resultType === "tv") {
-    networkCompanies();
-  }
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--maxPrimaryPageWidth", "1400px");
-    fetchData();
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    getDatas.dataMovieInfomation();
+    getDatas.dataImfomationUrlTraler();
+    getDatas.dataImagesMovie();
+    getDatas.dataInfomationSocial();
+    getDatas.dataInfomationActors();
+    getDatas.dataInfomationKeywords();
+    getDatas.dataPostReview();
+    getDatas.dataRecommentdation();
 
-  window.onload = () => {
-    window.scrollTo(0, 0);
-  };
+    window.onload = () => {
+      window.scrollTo(0, 0);
+    };
+    document.documentElement.style.setProperty("--maxPrimaryPageWidth", "1400px");
+  }, []);
 
   return (
     <section className={cx("container", "movie_content", "backdrop", "poster")}>
       <ShortCutBar />
-      {dataMovie && (
-        <div
-          className={cx("header", "large", "border", "first")}
-          style={{
-            backgroundImage: `url("https://www.themoviedb.org/t/p/w1920_and_h800_multi_faces${dataMovie.backdrop_path}")`,
-          }}
-        >
-          <div className={cx("keyboard_s", "custom_bg")}>
-            <div className={cx("single_column")}>
-              <section className={cx("images", "inner")}>
-                <div className={cx("poster_wrapper")}>
-                  <div className={cx("poster")} onClick={handleShowOverlay}>
-                    <div className={cx("image_content", "backdrop")}>
-                      <img
-                        className={cx("poster")}
-                        src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${dataMovie.poster_path}`}
-                        alt={dataMovie.backdrop_path}
-                        data-src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${dataMovie.poster_path}`}
-                        data-srcset={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${dataMovie.poster_path} 1x, https://www.themoviedb.org/t/p/w600_and_h900_bestv2${dataMovie.poster_path} 2x`}
-                        srcSet={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${dataMovie.poster_path} 1x, https://www.themoviedb.org/t/p/w300_and_h450_bestv2${dataMovie.poster_path} 2x`}
-                        data-loaded="true"
-                      />
-                    </div>
-                    <div className={cx("zoom")}>
-                      <a className={cx("no_click")}>
-                        <span className={cx("glyphicons_v2", "fullscreen", "white")}></span>Expand
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className={cx("header_poster_wrapper")}>
-                  <section className={cx("header", "poster")}>
-                    <div className={cx("title", "ott_false")}>
-                      <h2 className={cx("10")}>
-                        <a>{dataMovie.title ?? dataMovie.name}</a>
-                        <span className={cx("tag", "release_date")}>{getYear()}</span>
-                      </h2>
-                      <div className={cx("facts")}>
-                        {resultType === "movie" ? (
-                          <>
-                            <span className={cx("certification")}>{matchedCertification()}</span>
-                            <span className={cx("release")}>{formattedDate()} (US)</span>
-                            <span className={cx("genres")}>
-                              {matchedGenreNames.map((name) => {
-                                return (
-                                  <a key={name} href="#">
-                                    {name},{" "}
-                                  </a>
-                                );
-                              })}
-                            </span>
-                            <span className={cx("runtime")}>{runtime(Number(dataMovie.runtime))}</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className={cx("certification")}>{matchedCertification()}</span>
-                            <span
-                              className={cx("genres", "no_content")}
-                              style={{
-                                paddingLeft: "0",
-                              }}
-                            >
-                              {matchedGenreNames.map((name) => {
-                                return (
-                                  // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                                  <a key={name} href="#">
-                                    {name},{" "}
-                                  </a>
-                                );
-                              })}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <ul className={cx("auto", "action")}>
-                      <li className={cx("chart")}>
-                        <div className={cx("consensus", "details")}>
-                          <div className={cx("outer_ring")}>
-                            {rateting(dataMovie.vote_average) <= 70 ? (
-                              <CircularProgressbar
-                                value={rateting(dataMovie.vote_average)}
-                                text={`${rateting(dataMovie.vote_average)}%`}
-                                styles={buildStyles({
-                                  // Rotation of path and trail, in number of turns (0-1)
-                                  rotation: 0,
-
-                                  // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-                                  strokeLinecap: "round",
-
-                                  // Text size
-                                  textSize: "3.2rem",
-
-                                  // How long animation takes to go from one percentage to another, in seconds
-                                  pathTransitionDuration: 0.5,
-
-                                  // Can specify path transition in more detail, or remove it entirely
-                                  // pathTransition: 'none',
-
-                                  // Colors
-
-                                  pathColor: `#d2d531`,
-                                  textColor: "#fff",
-                                  trailColor: "#423d0f",
-                                })}
-                              />
-                            ) : (
-                              <CircularProgressbar
-                                value={rateting(dataMovie.vote_average)}
-                                text={`${rateting(dataMovie.vote_average)}%`}
-                                styles={buildStyles({
-                                  // Rotation of path and trail, in number of turns (0-1)
-                                  rotation: 0,
-
-                                  // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-                                  strokeLinecap: "round",
-
-                                  // Text size
-                                  textSize: "3.2rem",
-
-                                  // How long animation takes to go from one percentage to another, in seconds
-                                  pathTransitionDuration: 0.5,
-
-                                  // Can specify path transition in more detail, or remove it entirely
-                                  // pathTransition: 'none',
-
-                                  // Colors
-
-                                  pathColor: `#21d07a`,
-                                  textColor: "#fff",
-                                  trailColor: "#204529",
-                                })}
-                              />
-                            )}{" "}
-                          </div>
-                        </div>
-                        <div className={cx("text")}>
-                          User
-                          <br />
-                          Score
-                        </div>
-                      </li>
-                      <li className={cx("tooltip", "use_tooltip list", "tooltip_hover")} title="" data-role="tooltip">
-                        <Tippy
-                          className={cx("tooltip-lib-ver_1")}
-                          content={<span>Login to create and edit custom lists</span>}
-                          placement="bottom"
-                          interactive={true}
-                          arrow={false}
-                        >
-                          <a className={cx("no_click")} href="#">
-                            <span className={cx("glyphicons_v2", "thumbnails-list", "white")}></span>
-                          </a>
-                        </Tippy>
-                      </li>
-                      <li className={cx("tooltip", "use_tooltip list", "tooltip_hover")} title="" data-role="tooltip">
-                        <Tippy
-                          className={cx("tooltip-lib-ver_1")}
-                          content={<span>Login to add this movie to your favorite list</span>}
-                          placement="bottom"
-                          interactive={true}
-                          arrow={false}
-                        >
-                          <a className={cx("no_click")} href="#">
-                            <span className={cx("glyphicons_v2", "heart ", "white")}></span>
-                          </a>
-                        </Tippy>
-                      </li>
-                      <li className={cx("tooltip", "use_tooltip list", "tooltip_hover")} title="" data-role="tooltip">
-                        <Tippy
-                          className={cx("tooltip-lib-ver_1")}
-                          content={<span>Login to add this movie to your watchlist</span>}
-                          placement="bottom"
-                          interactive={true}
-                          arrow={false}
-                        >
-                          <a className={cx("no_click")} href="#">
-                            <span className={cx("glyphicons_v2", "bookmark", "white")}></span>
-                          </a>
-                        </Tippy>
-                      </li>
-                      <li className={cx("tooltip", "use_tooltip list", "tooltip_hover")} title="" data-role="tooltip">
-                        <Tippy
-                          className={cx("tooltip-lib-ver_1")}
-                          content={<span>Login to rate this movie</span>}
-                          placement="bottom"
-                          interactive={true}
-                          arrow={false}
-                        >
-                          <a className={cx("no_click")} href="#">
-                            <span className={cx("glyphicons_v2", "star", "white")}></span>
-                          </a>
-                        </Tippy>
-                      </li>
-                      <li className={cx("video", "none")} onClick={playTrailer}>
-                        <NavLink
-                          className={cx("no_click", "play_trailer")}
-                          data-site="YouTube"
-                          data-title="Play Trailer"
-                        >
-                          <span className={cx("glyphicons_v2", "play")}></span> Play Trailer
-                        </NavLink>
-                      </li>
-                    </ul>
-                    <div className={cx("header_info")}>
-                      <h3 className={cx("tagline")} dir="auto">
-                        {dataMovie.tagline}
-                      </h3>
-                      <h3 dir="auto">Overview</h3>
-                      <div className={cx("overview")} dir="auto">
-                        <p>{dataMovie.overview}</p>
-                      </div>
-                      <ol className={cx("people", "no_image")}>
-                        {dataCrew.slice(0, 6).map((crew) => {
-                          return (
-                            <li key={crew.id} className={cx("profile")}>
-                              <p>
-                                <a href={`/person/${crew.id}-${crew.name}?language=en`}>{crew.name}</a>
-                              </p>
-                              <p className={cx("character")}>{crew.department}</p>
-                            </li>
-                          );
-                        })}
-                      </ol>
-                    </div>
-                  </section>
-                </div>
-              </section>
-            </div>
-          </div>
-        </div>
-      )}
+      <Header
+        id={id}
+        resultType={resultType}
+        movieId={movieId}
+        dataMovie={dataMovie}
+        dataCrew={dataCrew}
+        dataActor={dataActors}
+      />
       <div className={cx("media", "movie_v4", "header_large")}>
+        {loading && (
+          <Box className={cx("line_progress")} sx={{width: "100%"}}>
+            <LinearProgress />
+          </Box>
+        )}
+
         <div className={cx("column_wrapper")}>
           <div className={cx("content_wrapper")}>
             <div>
@@ -482,26 +253,32 @@ const BackDrop = () => {
                   <h3 dir="auto">Top Billed Cast</h3>
                   <div className={cx("scroller_wrap", "should_fade", isScrolled ? "is_hidden" : "is_fading")}>
                     <ol className={cx("people", "scroller")} ref={scrollerRefOne} onScroll={handleScroll}>
-                      {dataActors ? (
-                        dataActors.slice(0, visibleCards).map((actor) => {
-                          return (
-                            <li className={cx("card")} key={actor.id}>
-                              <a href={`/person/${actor.id}-${actor.name}?language=en`}>
-                                <img
-                                  loading="lazy"
-                                  className={cx("profile")}
-                                  src={`https://www.themoviedb.org/t/p/w138_and_h175_face/${actor.profile_path}`}
-                                  alt={actor.name}
-                                />
-                              </a>
+                      {filteredActor() ? (
+                        filteredActor()
+                          .slice(0, 9)
+                          .map((actor, index) => {
+                            return (
+                              <li className={cx("card")} key={index}>
+                                <a href={`/person/${actor.id}-${actor.name}?language=en`}>
+                                  <img
+                                    loading="lazy"
+                                    className={cx("profile")}
+                                    src={
+                                      actor.profile_path
+                                        ? `https://www.themoviedb.org/t/p/w138_and_h175_face/${actor.profile_path}`
+                                        : defaultImage
+                                    }
+                                    alt={actor.name}
+                                  />
+                                </a>
 
-                              <p>
-                                <a href={`/person/${actor.id}-${actor.name}?language=en`}>{actor.name}</a>
-                              </p>
-                              <p className={cx("character")}>{actor.character}</p>
-                            </li>
-                          );
-                        })
+                                <p>
+                                  <a href={`/person/${actor.id}-${actor.name}?language=en`}>{actor.name}</a>
+                                </p>
+                                <p className={cx("character")}>{actor.job}</p>
+                              </li>
+                            );
+                          })
                       ) : (
                         <div>No actor data available</div>
                       )}
@@ -524,13 +301,19 @@ const BackDrop = () => {
                     <div className={cx("menu")}>
                       <h3 dir="auto">Social</h3>
                       <ul>
-                        <li dir="auto">
-                          <a id="reviews" className={cx("media_panel")} href="#">
-                            Reviews <span>0</span>
+                        <li
+                          className={cx(activeTab === "first" ? "active" : "")}
+                          onClick={() => changeTab.social("first")}
+                        >
+                          <a id="reviews" className={cx("media_panel")}>
+                            Reviews <span>{dataReview.length}</span>
                           </a>
                         </li>
-                        <li className={cx("active")} dir="auto">
-                          <a id="discussions" className={cx("media_panel")} href="#">
+                        <li
+                          className={cx(activeTab === "second" ? "active" : "")}
+                          onClick={() => changeTab.social("second")}
+                        >
+                          <a id="discussions" className={cx("media_panel")}>
                             Discussions <span>1</span>
                           </a>
                         </li>
@@ -538,7 +321,18 @@ const BackDrop = () => {
                     </div>
                     <div className={cx("content")}>
                       <div className={cx("original_content")}>
-                        <div className={cx("discussion_container")}>
+                        <div className={cx(activeTab === "first" ? "show_content" : "", "review_container")}>
+                          {dataReview && dataReview[0] && (
+                            <Reviews
+                              key={randomID}
+                              dataReview={dataReview[0]}
+                              id={id}
+                              resultType={resultType}
+                              dataMovie={dataMovie}
+                            />
+                          )}
+                        </div>
+                        <div className={cx(activeTab === "second" ? "show_content" : "", "discussion_container")}>
                           <table className={cx("new", "space")}>
                             <thead>
                               <tr>
@@ -601,72 +395,239 @@ const BackDrop = () => {
                   <div className={cx("menu")}>
                     <h3 dir="auto">Media</h3>
                     <ul>
-                      <li className={cx("active")} dir="auto">
-                        <a id="popular" className={cx("media_panel")} href="#">
+                      <li
+                        className={cx(activeTabMedia === "popular" ? "active" : "")}
+                        onClick={() => changeTab.media("popular")}
+                      >
+                        <a id="popular" className={cx("media_panel")}>
                           Most Popular
                         </a>
                       </li>
-                      <li dir="auto">
-                        <a id="videos" className={cx("media_panel")} href="#">
-                          Videos <span>8</span>
+                      <li
+                        className={cx(activeTabMedia === "videos" ? "active" : "")}
+                        onClick={() => {
+                          changeTab.media("videos");
+                          fetchDataVideos();
+                        }}
+                      >
+                        <a id="videos" className={cx("media_panel")}>
+                          Videos <span>{dataUrlTraler.length}</span>
                         </a>
                       </li>
-                      <li dir="auto">
-                        <a id="backdrops" className={cx("media_panel")} href="#">
-                          Backdrops <span>17</span>
+                      <li
+                        className={cx("media_panel", activeTabMedia === "backdrops" ? "active" : "")}
+                        onClick={() => {
+                          changeTab.media("backdrops");
+                          getDatas.dataMovieInfomation();
+                        }}
+                      >
+                        <a id="backdrops">
+                          Backdrops <span>{dataImages.length}</span>
                         </a>
                       </li>
-                      <li dir="auto">
-                        <a id="posters" className={cx("media_panel")} href="#">
-                          Posters <span>109</span>
+                      <li
+                        className={cx("media_panel", activeTabMedia === "posters" ? "active" : "")}
+                        onClick={() => {
+                          changeTab.media("posters");
+                          getDatas.dataMovieInfomation();
+                        }}
+                      >
+                        <a id="posters">
+                          Posters <span>{dataMovie && dataMovie.images && dataMovie.images.posters.length}</span>
                         </a>
                       </li>
-                      <li className={cx("view_all")}></li>
+                      {activeTabMedia !== "popular" && (
+                        <li className={cx("view_all")}>
+                          <NavLink
+                            to={`/${resultType}/${id}/${activeTabMedia}?language=en`}
+                          >{`View All ${activeTabMedia}`}</NavLink>
+                        </li>
+                      )}
                     </ul>
                   </div>
-                  <div className={cx("scroller_wrap", "should_fade", isScrolled ? "is_hidden" : "is_fading")}>
-                    <div
-                      className={cx("h_scroller", "content scroller")}
-                      ref={scrollerRefSecond}
-                      onScroll={handleScroll}
-                    >
-                      <div className={cx("video", "card", "no_border")}>
-                        <div
-                          className={cx("wrapper")}
-                          style={{
-                            backgroundImage: `url("https://image.tmdb.org/t/p/w533_and_h300_bestv2/${imagesList[0]}")`,
-                          }}
-                        >
-                          <NavLink
-                            className={cx("no_click", "play_trailer")}
-                            href="#"
-                            data-site="YouTube"
-                            data-id="QF-oyCwaArU"
-                            data-title="Official Trailer"
-                            onClick={playTrailer}
+                  <div
+                    className={cx("scroller_wrap", "should_fade", isScrolled ? "is_hidden" : "is_fading")}
+                    ref={scrollerRefSecond}
+                    onScroll={handleScroll}
+                  >
+                    {activeTabMedia === "popular" && (
+                      <div
+                        className={cx("h_scroller", "content scroller")}
+                        ref={scrollerRefSecond}
+                        onScroll={handleScroll}
+                      >
+                        <div className={cx("video", "card", "no_border")}>
+                          <div
+                            className={cx("wrapper")}
+                            style={{
+                              backgroundImage: `url("https://image.tmdb.org/t/p/w533_and_h300_bestv2/${imagesList[0]}")`,
+                            }}
                           >
-                            <div className={cx("play_background")}>
-                              <span className={cx("glyphicons_v2", "play", "invert", "svg")}></span>
-                            </div>
-                          </NavLink>
+                            <NavLink
+                              className={cx("no_click", "play_trailer")}
+                              href="#"
+                              data-site="YouTube"
+                              data-id="QF-oyCwaArU"
+                              data-title="Official Trailer"
+                              onClick={playTrailer}
+                            >
+                              <div className={cx("play_background")}>
+                                <span className={cx("glyphicons_v2", "play", "invert", "svg")}></span>
+                              </div>
+                            </NavLink>
+                          </div>
+                        </div>
+                        <div className={cx("backdrop")}>
+                          <img
+                            loading="lazy"
+                            className={cx("backdrop")}
+                            src={`https://www.themoviedb.org/t/p/w533_and_h300_bestv2/${imagesList[1]}`}
+                            alt="The Nun II"
+                          />
+                        </div>
+                        <div className={cx("poster")}>
+                          <img
+                            className={cx("poster")}
+                            src={`https://www.themoviedb.org/t/p/w533_and_h300_bestv2/${imagesList[2]}`}
+                            alt="The Nun II"
+                          />
                         </div>
                       </div>
-                      <div className={cx("backdrop")}>
-                        <img
-                          loading="lazy"
-                          className={cx("backdrop")}
-                          src={`https://www.themoviedb.org/t/p/w533_and_h300_bestv2/${imagesList[1]}`}
-                          alt="The Nun II"
-                        />
-                      </div>
-                      <div className={cx("poster")}>
-                        <img
-                          className={cx("poster")}
-                          src={`https://www.themoviedb.org/t/p/w533_and_h300_bestv2/${imagesList[2]}`}
-                          alt="The Nun II"
-                        />
-                      </div>
-                    </div>
+                    )}
+                    {activeTabMedia === "videos" &&
+                      dataVideos &&
+                      (loading ? (
+                        <div className={cx("loading_skeleton")}>
+                          <Skeleton
+                            variant="rectangular"
+                            width={533}
+                            height={300}
+                            sx={{borderRadius: "8px"}}
+                            animation="wave"
+                          />
+                          <Skeleton
+                            variant="rectangular"
+                            width={533}
+                            height={300}
+                            sx={{borderRadius: "8px"}}
+                            animation="wave"
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className={cx("h_scroller", "content scroller")}
+                          ref={scrollerRefSecond}
+                          onScroll={handleScroll}
+                        >
+                          {dataVideos.slice(0, 6).map((video, index) => {
+                            return (
+                              <div key={index} className={cx("video", "card", "no_border")}>
+                                <div
+                                  className={cx("wrapper")}
+                                  style={{
+                                    backgroundImage: `url("https://image.tmdb.org/t/p/w533_and_h300_bestv2/${imagesList[index]}")`,
+                                  }}
+                                >
+                                  <NavLink
+                                    className={cx("no_click", "play_trailer")}
+                                    href="#"
+                                    data-site="YouTube"
+                                    data-id="QF-oyCwaArU"
+                                    data-title="Official Trailer"
+                                    onClick={playTrailer}
+                                  >
+                                    <div className={cx("play_background")}>
+                                      <span className={cx("glyphicons_v2", "play", "invert", "svg")}></span>
+                                    </div>
+                                  </NavLink>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ))}
+                    {activeTabMedia === "backdrops" &&
+                      dataMovie &&
+                      (loading ? (
+                        <div className={cx("loading_skeleton")}>
+                          <Skeleton
+                            variant="rectangular"
+                            width={533}
+                            height={300}
+                            sx={{borderRadius: "8px"}}
+                            animation="wave"
+                          />
+                          <Skeleton
+                            variant="rectangular"
+                            width={533}
+                            height={300}
+                            sx={{borderRadius: "8px"}}
+                            animation="wave"
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className={cx("h_scroller", "content scroller")}
+                          ref={scrollerRefSecond}
+                          onScroll={handleScroll}
+                        >
+                          {dataMovie &&
+                            dataMovie.images &&
+                            dataMovie.images.backdrops.slice(0, 6).map((img, index) => {
+                              return (
+                                <div key={index} className={cx("backdrop")}>
+                                  <img
+                                    className={cx("backdrop_img")}
+                                    src={`https://media.themoviedb.org/t/p/w533_and_h300_bestv2/${img.file_path}`}
+                                    srcSet={`https://media.themoviedb.org/t/p/w533_and_h300_bestv2/${img.file_path} 1x https://media.themoviedb.org/t/p/w533_and_h300_bestv2/${img.file_path} 2x`}
+                                    alt={dataMovie.original_title}
+                                  />
+                                </div>
+                              );
+                            })}
+                        </div>
+                      ))}
+                    {activeTabMedia === "posters" &&
+                      dataMovie &&
+                      (loading ? (
+                        <div className={cx("loading_skeleton")}>
+                          <Skeleton
+                            variant="rectangular"
+                            width={533}
+                            height={300}
+                            sx={{borderRadius: "8px"}}
+                            animation="wave"
+                          />
+                          <Skeleton
+                            variant="rectangular"
+                            width={533}
+                            height={300}
+                            sx={{borderRadius: "8px"}}
+                            animation="wave"
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className={cx("h_scroller", "content scroller")}
+                          ref={scrollerRefSecond}
+                          onScroll={handleScroll}
+                        >
+                          {dataMovie &&
+                            dataMovie.images &&
+                            dataMovie.images.posters.slice(0, 6).map((img, index) => {
+                              return (
+                                <div key={index} className={cx("poster")}>
+                                  <img
+                                    className={cx("poster_img")}
+                                    src={`https://media.themoviedb.org/t/p/w220_and_h330_face/${img.file_path}`}
+                                    srcSet={`https://media.themoviedb.org/t/p/w220_and_h330_face/${img.file_path} 1x https://media.themoviedb.org/t/p/w220_and_h330_face/${img.file_path} 2x`}
+                                    alt={dataMovie.original_title}
+                                  />
+                                </div>
+                              );
+                            })}
+                        </div>
+                      ))}
                   </div>
                 </section>
                 <section className={cx("panel", "collection")}>
@@ -691,10 +652,31 @@ const BackDrop = () => {
                 <section className={cx("panel", "recommendations", "scroller")}>
                   <div className={cx("recommendation_waypoint")}>
                     <h3 dir="auto">Recommendations</h3>
-                    <p className={cx("no_margin")} dir="auto">
+                    <div
+                      className={cx("recommentdation_list", "should_fade", isScrolled ? "is_hidden" : "is_fading")}
+                      style={{display: "flex", overflowX: "scroll", position: "relative"}}
+                      ref={scrollerRefTheree}
+                      onScroll={handleScroll}
+                    >
+                      {dataRecommentdation.map((card, index) => {
+                        return (
+                          <Recommentdation
+                            id={card.id}
+                            index={index}
+                            image={card.poster_path}
+                            name={card.name}
+                            time={card.first_air_date}
+                            recent={card.vote_average}
+                            path={pathname}
+                            type={resultType}
+                          />
+                        );
+                      })}
+                    </div>
+                    {/* <p className={cx("no_margin")} dir="auto">
                       We don't have enough data to suggest any movies based on The Nun II. You can help by rating movies
                       you've seen.
-                    </p>
+                    </p> */}
                   </div>
                 </section>
               </div>
@@ -815,7 +797,20 @@ const BackDrop = () => {
                               </strong>
                             </p>
                             <ul className={cx("networks")}>
-                              <li>
+                              {networkCompanies() &&
+                                networkCompanies().map((logo, index) => (
+                                  <li key={randomID}>
+                                    <a href="/network/1024?language=en">
+                                      <img
+                                        loading="lazy"
+                                        alt="See more TV shows from Prime Video..."
+                                        src={`https://www.themoviedb.org/t/p/h30/${logo}`}
+                                        srcSet={`https://www.themoviedb.org/t/p/h30/${logo} 1x, https://www.themoviedb.org/t/p/h30/${logo} 2x`}
+                                      />
+                                    </a>
+                                  </li>
+                                ))}
+                              {/* <li>
                                 <a href="/network/1024?language=en">
                                   <img
                                     loading="lazy"
@@ -824,7 +819,7 @@ const BackDrop = () => {
                                     srcSet={`https://www.themoviedb.org/t/p/h30/${logoNetwork} 1x, https://www.themoviedb.org/t/p/h30/${logoNetwork} 2x`}
                                   />
                                 </a>
-                              </li>
+                              </li> */}
                             </ul>
                             <p>
                               <strong>
@@ -874,21 +869,13 @@ const BackDrop = () => {
                           <bdi>Keywords</bdi>
                         </h4>
                         <ul>
-                          {resultType === "movie"
-                            ? dataKeywords.map((keyword) => {
-                                return (
-                                  <li key={keyword}>
-                                    <a href="#">{keyword.name}</a>
-                                  </li>
-                                );
-                              })
-                            : dataKeywords.map((keyWord) => {
-                                return (
-                                  <li key={keyWord}>
-                                    <a href="#">{keyWord.name}</a>
-                                  </li>
-                                );
-                              })}
+                          {dataKeywords.map((keyword, index) => {
+                            return (
+                              <li key={index}>
+                                <a href="#">{keyword.name}</a>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </section>
                     </div>
@@ -1083,14 +1070,21 @@ const BackDrop = () => {
           </div>
         </div>
       </div>
-      {isShowIframe && <Iframe embedId={finalTtraler.key} onClick={handleHideIframe} name={dataMovie.title} />}
+      {isShowIframe && (
+        <Iframe
+          embedId={finalTtraler && finalTtraler.key}
+          onClick={handleHideIframe}
+          name={dataMovie.title || dataMovie.name}
+        />
+      )}
       {isShowOverlay && (
         <OverlayContent
           id={movieId}
           type={resultType}
-          onClick={handleHideOverlay}
+          onClick={showOverlay.handleHideOverlay}
           backdrop_path={dataMovie.poster_path}
           poster_path={dataMovie.poster_path}
+          dataImagess={dataMovie}
         />
       )}
     </section>

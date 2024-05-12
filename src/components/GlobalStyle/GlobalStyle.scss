@@ -15,6 +15,9 @@
   --accountGreen: 1, 210, 119;
   --primaryColor: rgba(31.5, 10.5, 10.5, 1);
   --accountPink: 234,20,140;
+  --accountSilver:149,149,149;
+  --numberOfBackdropColumns: 4;
+  --imageColumnPadding: 30px;
 }
 
 html {
@@ -565,6 +568,50 @@ section.inner_content h3 span.glyphicons_v2 {
   background-image: url("../../assets/svgs/leftArrow.svg");
 }
 
+.glyphicons_v2.star_review{
+  background-image: url("../../assets/svgs/start_review.svg");
+}
+
+.glyphicons_v2.defaultPicture{
+  background-image: url("../../assets/svgs/defaultPicture.svg");
+}
+
+.glyphicons_v2.pencil{
+  background-image: url("../../assets/svgs/pencil.svg");
+}
+
+.glyphicons_v2.circle-plus{
+  background-image: url("../../assets/svgs/circle-plus.svg");
+}
+
+.glyphicons_v2.thumb_up{
+  background-image: url("../../assets/svgs/thumb_up.svg");
+}
+
+.glyphicons_v2.thumb_down{
+  background-image: url("../../assets/svgs/thumb_down.svg");
+}
+
+.glyphicons_v2.unlock{
+  background-image: url("../../assets/svgs/unlock.svg");
+}
+
+.glyphicons_v2.calendar{
+  background-image: url("../../assets/svgs/calendar.svg");
+}
+
+.glyphicons_v2.star{
+  background-image: url("../../assets/svgs/star.svg");
+}
+
+.glyphicons_v2.heart{
+  background-image: url("../../assets/svgs/heart.svg");
+}
+
+.glyphicons_v2.bookmark{
+  background-image: url("../../assets/svgs/bookmark.svg");
+}
+
 section.inner_content.bg_image div.selector a {
   color: #fff;
 }
@@ -762,6 +809,10 @@ section.inner_content div.content div.card.style_2 div.image div.play span.glyph
 
 .glyphicons_v2.play {
   background-image: url("../../assets/svgs/play.svg");
+}
+
+.glyphicons_v2.verify-check{
+  background-image: url("../../assets/svgs/verify-check.svg");
 }
 
 .svg.invert {
@@ -1174,4 +1225,8 @@ section.inner_content {
 
 .background_color.pink{
   background-color: rgba(var(--accountPink),1);
+}
+
+.hide_content{
+  display: none;
 }

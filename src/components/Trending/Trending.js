@@ -4,7 +4,8 @@ import classNames from "classnames/bind";
 
 import styles from "./Trending.module.scss";
 import Card from "./Card/Card";
-import ApiLinks from "~/api/Apis";
+import ApiLinks from "~/services/api/Apis";
+import http from "~/services/axios/axios";
 
 const cx = classNames.bind(styles);
 
@@ -39,16 +40,18 @@ const Trending = () => {
     },
   };
 
-  const movieTredingToday = async () => {
-    const responsive = await fetch(ApiLinks.apiTrendingToday);
-    const data = responsive.json();
-    return data;
+  const movieTredingToday = () => {
+    http
+      .get(ApiLinks.apiTrendingToday)
+      .then((res) => setDataMovieTrendingToday(res.data.results))
+      .catch((error) => console.log(error));
   };
 
-  const movieTredingWeek = async () => {
-    const responsive = await fetch(ApiLinks.apiTrendingWeek);
-    const data = responsive.json();
-    return data;
+  const movieTredingWeek = () => {
+    http
+      .get(ApiLinks.apiTrendingWeek)
+      .then((res) => setDataMovieTrendingWeek(res.data.results))
+      .catch((error) => console.log(error));
   };
 
   const handleScroll = () => {
@@ -60,21 +63,8 @@ const Trending = () => {
   };
 
   useEffect(() => {
-    movieTredingToday()
-      .then((movie) => {
-        setDataMovieTrendingToday(movie.results);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-
-    movieTredingWeek()
-      .then((movie) => {
-        setDataMovieTrendingWeek(movie.results);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+    movieTredingToday();
+    movieTredingWeek();
   }, []);
 
   return (
